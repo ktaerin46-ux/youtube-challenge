@@ -154,6 +154,11 @@ export default function MyPage() {
                 <Youtube size={12} /> 채널 보기
               </a>
             </p>
+            {/* 리더보드 익명 닉네임 */}
+            <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1">
+              <span className="text-xs text-indigo-500">리더보드 닉네임</span>
+              <span className="text-sm font-bold text-indigo-700">🎭 {data.random_nickname}</span>
+            </div>
           </div>
           <Button
             variant="secondary"
