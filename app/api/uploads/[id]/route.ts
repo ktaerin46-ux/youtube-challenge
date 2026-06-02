@@ -27,7 +27,7 @@ export async function DELETE(
       return Response.json({ error: "업로드를 찾을 수 없습니다." }, { status: 404 });
     }
 
-    const participant = upload.participants as { client_id: string } | null;
+    const participant = (upload.participants as unknown) as { client_id: string } | null;
     if (!isAdmin && participant?.client_id !== clientId) {
       return Response.json({ error: "삭제 권한이 없습니다." }, { status: 403 });
     }
