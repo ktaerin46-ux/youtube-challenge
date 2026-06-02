@@ -1,23 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Download, FileText, Filter, Youtube, ExternalLink, Play } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Download, FileText, Filter, Youtube, ExternalLink, Play, Lock } from "lucide-react";
 import Navbar from "@/components/common/Navbar";
 import MotivationalBanner from "@/components/common/MotivationalBanner";
 import { Resource, RESOURCE_CATEGORIES, ResourceCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { CLIENT_ID_KEY } from "@/lib/constants";
 
 const ALL_CATEGORIES = "all";
 
 export default function ResourcesPage() {
+  const router = useRouter();
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAuthed, setIsAuthed] = useState(false);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>(ALL_CATEGORIES);
 
   useEffect(() => {
-    async function fetchResources() {
+    async function checkAuthAndFetch() {
+      // 1. 로컬스토리지에서 clientId 확인
+      const clientId = localStorage.getItem(CLIENT_ID_KEY);
+      if (!clientId) {
+        setLoading(false);
+        return;
+      }
+
+      // 2. 실제 참가자인지 서버에서 검증
       try {
+        const authRes = await fetch("/api/participants/lookup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ client_id: clientId }),
+        });
+        const participant = await authRes.json();
+
+        if (!participant?.id) {
+          setLoading(false);
+          return;
+        }
+
+        setIsAuthed(true);
+
+        // 3. 인증된 경우에만 자료 로드
         const res = await fetch("/api/resources");
         const data = await res.json();
         setResources(Array.isArray(data) ? data : []);
@@ -27,7 +54,7 @@ export default function ResourcesPage() {
         setLoading(false);
       }
     }
-    fetchResources();
+    checkAuthAndFetch();
   }, []);
 
   const filtered = resources.filter((r) => {
@@ -46,6 +73,34 @@ export default function ResourcesPage() {
       label,
     })),
   ];
+
+  // 미등록 사용자 — 잠금 화면
+  if (!loading && !isAuthed) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <MotivationalBanner />
+        <Navbar />
+        <div className="flex flex-col items-center justify-center px-4 py-24 text-center">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-indigo-100">
+            <Lock size={36} className="text-indigo-500" />
+          </div>
+          <h2 className="mb-2 text-2xl font-black text-gray-900">
+            챌린지 참가자 전용입니다
+          </h2>
+          <p className="mb-8 max-w-sm text-gray-500">
+            자료실은 챌린지에 등록한 수강생만 이용할 수 있어요.
+            먼저 챌린지에 참가 신청해주세요!
+          </p>
+          <a
+            href="/"
+            className="rounded-xl bg-indigo-600 px-8 py-3 font-semibold text-white hover:bg-indigo-700 transition-colors"
+          >
+            챌린지 참가 신청하기 🚀
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
