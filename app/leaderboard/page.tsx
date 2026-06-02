@@ -20,7 +20,7 @@ export default function LeaderboardPage() {
     try {
       const res = await fetch("/api/participants");
       const data = await res.json();
-      setParticipants(data || []);
+      setParticipants(Array.isArray(data) ? data : []);
       setLastUpdated(new Date());
 
       // Get my nickname

@@ -31,7 +31,7 @@ export default function AdminResourcesPage() {
     try {
       const res = await fetch("/api/resources");
       const data = await res.json();
-      setResources(data || []);
+      setResources(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
     } finally {

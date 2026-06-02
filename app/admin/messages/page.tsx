@@ -27,7 +27,7 @@ export default function MessagesPage() {
     try {
       const res = await fetch("/api/messages");
       const data = await res.json();
-      setMessages(data || []);
+      setMessages(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
     } finally {

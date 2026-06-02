@@ -43,7 +43,7 @@ export default function ParticipantsPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      setParticipants(data || []);
+      setParticipants(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
     } finally {

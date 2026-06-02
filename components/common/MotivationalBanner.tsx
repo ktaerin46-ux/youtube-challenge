@@ -13,9 +13,10 @@ export default function MotivationalBanner() {
       try {
         const res = await fetch("/api/messages");
         const data = await res.json();
-        const active = data
-          .filter((m: { is_active: boolean; message: string }) => m.is_active)
-          .map((m: { message: string }) => m.message);
+        const active = Array.isArray(data)
+          ? data.filter((m: { is_active: boolean; message: string }) => m.is_active)
+              .map((m: { message: string }) => m.message)
+          : [];
 
         const messages =
           active.length > 0 ? active : DEFAULT_MOTIVATIONAL_MESSAGES;
