@@ -42,7 +42,13 @@ export async function POST(request: NextRequest) {
     let file_url = "";
     let file_name = "";
 
-    if (file) {
+    const video_url = formData.get("video_url") as string;
+
+    if (video_url?.trim()) {
+      // 유튜브 또는 외부 링크
+      file_url = video_url.trim();
+      file_name = "youtube";
+    } else if (file) {
       const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("resources")

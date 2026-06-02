@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Download, FileText, Filter } from "lucide-react";
+import { Search, Download, FileText, Filter, Youtube, ExternalLink, Play } from "lucide-react";
 import Navbar from "@/components/common/Navbar";
 import MotivationalBanner from "@/components/common/MotivationalBanner";
 import { Resource, RESOURCE_CATEGORIES, ResourceCategory } from "@/types";
@@ -127,6 +127,19 @@ export default function ResourcesPage() {
   );
 }
 
+function isYouTubeUrl(url: string) {
+  return url.includes("youtube.com") || url.includes("youtu.be");
+}
+
+function isExternalLink(url: string) {
+  return url.startsWith("http") && !url.includes("supabase");
+}
+
+function getYoutubeThumbnail(url: string) {
+  const match = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : null;
+}
+
 function ResourceCard({ resource }: { resource: Resource }) {
   const categoryLabel =
     RESOURCE_CATEGORIES[resource.category as ResourceCategory] ||
@@ -140,51 +153,63 @@ function ResourceCard({ resource }: { resource: Resource }) {
     other: "bg-gray-100 text-gray-600",
   };
 
+  const isYT = resource.file_url && isYouTubeUrl(resource.file_url);
+  const isLink = resource.file_url && !isYT && isExternalLink(resource.file_url);
+  const isFile = resource.file_url && !isYT && !isLink;
+  const thumb = isYT ? getYoutubeThumbnail(resource.file_url) : null;
+
   return (
-    <div className="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 hover:border-gray-300 hover:shadow-md transition-all duration-200">
-      {/* Category badge */}
-      <div className="mb-3">
-        <span
-          className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-            categoryColors[resource.category] || "bg-gray-100 text-gray-600"
-          }`}
-        >
-          {categoryLabel}
-        </span>
-      </div>
+    <div className="group flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden hover:border-gray-300 hover:shadow-md transition-all duration-200">
+      {/* 유튜브 썸네일 */}
+      {thumb && (
+        <a href={resource.file_url} target="_blank" rel="noopener noreferrer" className="relative block">
+          <img src={thumb} alt={resource.title} className="w-full h-40 object-cover" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-600">
+              <Play size={20} className="text-white ml-1" />
+            </div>
+          </div>
+        </a>
+      )}
 
-      {/* Content */}
-      <div className="flex-1">
-        <div className="mb-1 flex items-start gap-2">
-          <FileText size={18} className="mt-0.5 shrink-0 text-gray-400" />
-          <h3 className="font-semibold text-gray-800 leading-snug">
-            {resource.title}
-          </h3>
+      <div className="flex flex-col flex-1 p-5">
+        {/* Category badge */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${categoryColors[resource.category] || "bg-gray-100 text-gray-600"}`}>
+            {categoryLabel}
+          </span>
+          {isYT && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-600 flex items-center gap-1"><Youtube size={10} /> 영상</span>}
+          {isLink && <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 flex items-center gap-1"><ExternalLink size={10} /> 링크</span>}
         </div>
-        {resource.description && (
-          <p className="mt-1 text-sm text-gray-500 leading-relaxed line-clamp-3">
-            {resource.description}
-          </p>
-        )}
-      </div>
 
-      {/* Footer */}
-      <div className="mt-4 flex items-center justify-between">
-        <p className="text-xs text-gray-400">
-          {formatDate(resource.created_at)}
-        </p>
-        {resource.file_url && (
-          <a
-            href={resource.file_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            download={resource.file_name}
-            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 transition-colors"
-          >
-            <Download size={12} />
-            다운로드
-          </a>
-        )}
+        {/* Content */}
+        <div className="flex-1">
+          <div className="mb-1 flex items-start gap-2">
+            {isYT ? <Youtube size={16} className="mt-0.5 shrink-0 text-red-500" /> : <FileText size={16} className="mt-0.5 shrink-0 text-gray-400" />}
+            <h3 className="font-semibold text-gray-800 leading-snug">{resource.title}</h3>
+          </div>
+          {resource.description && (
+            <p className="mt-1 text-sm text-gray-500 leading-relaxed line-clamp-3">{resource.description}</p>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-xs text-gray-400">{formatDate(resource.created_at)}</p>
+          {resource.file_url && (
+            <a
+              href={resource.file_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              {...(!isYT && !isLink ? { download: resource.file_name } : {})}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-colors ${
+                isYT ? "bg-red-500 hover:bg-red-600" : isLink ? "bg-blue-500 hover:bg-blue-600" : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
+            >
+              {isYT ? <><Play size={12} /> 영상 보기</> : isLink ? <><ExternalLink size={12} /> 링크 열기</> : <><Download size={12} /> 다운로드</>}
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
