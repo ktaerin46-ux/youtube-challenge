@@ -5,6 +5,7 @@ import {
 } from "@/types";
 import {
   CHALLENGE_WEEKS,
+  CHALLENGE_START_DATE,
   SHORTS_WEEKLY_GOAL,
   LONGFORM_WEEKLY_GOAL,
   RANDOM_NICKNAMES,
@@ -14,7 +15,7 @@ export function calculateProgress(
   startDate: string,
   uploads: Upload[]
 ): ProgressData {
-  const start = new Date(startDate);
+  const start = new Date(CHALLENGE_START_DATE);
   start.setHours(0, 0, 0, 0);
   const now = new Date();
   now.setHours(0, 0, 0, 0);

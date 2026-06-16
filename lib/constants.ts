@@ -58,6 +58,7 @@ export const DEFAULT_MOTIVATIONAL_MESSAGES = [
 
 export const CHALLENGE_WEEKS = 4;
 export const CHALLENGE_DAYS = 28;
+export const CHALLENGE_START_DATE = "2026-06-04";
 export const SHORTS_WEEKLY_GOAL = 3;
 export const LONGFORM_WEEKLY_GOAL = 1;
 
