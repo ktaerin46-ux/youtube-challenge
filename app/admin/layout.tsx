@@ -10,14 +10,20 @@ import {
   BookOpen,
   LogOut,
   Youtube,
+  ShoppingCart,
+  Package,
+  UserCheck,
 } from "lucide-react";
 import { ADMIN_TOKEN_KEY } from "@/lib/constants";
 
 const navItems = [
   { href: "/admin", label: "대시보드", icon: LayoutDashboard, exact: true },
-  { href: "/admin/participants", label: "참가자 관리", icon: Users },
+  { href: "/admin/participants", label: "챌린지 참가자", icon: Users },
   { href: "/admin/messages", label: "동기부여 메시지", icon: MessageSquare },
   { href: "/admin/resources", label: "자료실 관리", icon: BookOpen },
+  { href: "/admin/users", label: "회원 관리", icon: UserCheck },
+  { href: "/admin/products", label: "상품/콘텐츠", icon: Package },
+  { href: "/admin/orders", label: "결제 내역", icon: ShoppingCart },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
