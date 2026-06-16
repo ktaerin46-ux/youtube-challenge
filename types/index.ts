@@ -6,7 +6,6 @@ export interface Participant {
   challenge_start_date: string;
   random_nickname: string;
   client_id: string;
-  phone_number: string | null;
   created_at: string;
   updated_at: string;
 }

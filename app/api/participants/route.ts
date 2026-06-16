@@ -57,9 +57,9 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, phone_number, youtube_channel_link, start_subscriber_count, challenge_start_date, client_id } = body;
+    const { name, youtube_channel_link, start_subscriber_count, challenge_start_date, client_id } = body;
 
-    if (!name?.trim() || !phone_number?.trim() || !youtube_channel_link?.trim() || !challenge_start_date || !client_id) {
+    if (!name?.trim() || !youtube_channel_link?.trim() || !challenge_start_date || !client_id) {
       return Response.json({ error: "필수 항목을 모두 입력해주세요." }, { status: 400 });
     }
 
@@ -76,20 +76,6 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "이미 등록된 참가자입니다." }, { status: 409 });
     }
 
-    // Check if phone number already registered (e.g. from another device)
-    const { data: existingPhone } = await supabase
-      .from("participants")
-      .select("id")
-      .eq("phone_number", phone_number.trim())
-      .maybeSingle();
-
-    if (existingPhone) {
-      return Response.json(
-        { error: "이 전화번호로 이미 등록되어 있어요. 홈 화면의 '전화번호로 내 정보 찾기'를 이용해주세요." },
-        { status: 409 }
-      );
-    }
-
     // Get existing nicknames to avoid duplicates
     const { data: nicknames } = await supabase
       .from("participants")
@@ -104,7 +90,6 @@ export async function POST(request: NextRequest) {
       .from("participants")
       .insert({
         name: name.trim(),
-        phone_number: phone_number.trim(),
         youtube_channel_link: youtube_channel_link.trim(),
         start_subscriber_count: Number(start_subscriber_count) || 0,
         challenge_start_date,

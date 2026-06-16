@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Youtube, User, Hash, Calendar, Phone } from "lucide-react";
+import { Youtube, User, Hash, Calendar } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { generateClientId } from "@/lib/utils";
@@ -14,7 +14,6 @@ export default function RegistrationForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     name: "",
-    phone_number: "",
     youtube_channel_link: "",
     start_subscriber_count: "",
     challenge_start_date: new Date().toISOString().split("T")[0],
@@ -23,8 +22,6 @@ export default function RegistrationForm() {
   function validate() {
     const newErrors: Record<string, string> = {};
     if (!form.name.trim()) newErrors.name = "이름을 입력해주세요.";
-    if (!form.phone_number.trim())
-      newErrors.phone_number = "전화번호를 입력해주세요.";
     if (!form.youtube_channel_link.trim())
       newErrors.youtube_channel_link = "유튜브 채널 링크를 입력해주세요.";
     if (!form.challenge_start_date)
@@ -49,7 +46,6 @@ export default function RegistrationForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          phone_number: form.phone_number.trim(),
           start_subscriber_count:
             Number(form.start_subscriber_count) || 0,
           client_id: clientId,
@@ -90,22 +86,6 @@ export default function RegistrationForm() {
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           error={errors.name}
           className="pl-9"
-        />
-      </div>
-
-      <div className="relative">
-        <div className="pointer-events-none absolute left-3 top-9 text-gray-400">
-          <Phone size={16} />
-        </div>
-        <Input
-          label="전화번호"
-          placeholder="010-1234-5678"
-          value={form.phone_number}
-          onChange={(e) => setForm({ ...form, phone_number: e.target.value })}
-          error={errors.phone_number}
-          className="pl-9"
-          type="tel"
-          hint="다른 기기에서 내 정보를 다시 찾을 때 사용돼요"
         />
       </div>
 
