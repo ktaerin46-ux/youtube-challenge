@@ -56,6 +56,7 @@ export const DEFAULT_MOTIVATIONAL_MESSAGES = [
   "포기하지 않는 사람이 결국 이깁니다.",
 ];
 
+export const CHALLENGE_START_DATE = "2026-06-04";
 export const CHALLENGE_WEEKS = 4;
 export const CHALLENGE_DAYS = 28;
 export const SHORTS_WEEKLY_GOAL = 3;

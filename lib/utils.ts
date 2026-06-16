@@ -4,17 +4,19 @@ import {
   ProgressData,
 } from "@/types";
 import {
+  CHALLENGE_START_DATE,
   CHALLENGE_WEEKS,
   SHORTS_WEEKLY_GOAL,
   LONGFORM_WEEKLY_GOAL,
   RANDOM_NICKNAMES,
 } from "./constants";
 
+// 챌린지 주차는 누가 보든 항상 CHALLENGE_START_DATE(6/4)부터 7일 단위로 고정된다.
 export function calculateProgress(
-  startDate: string,
+  _startDate: string,
   uploads: Upload[]
 ): ProgressData {
-  const start = new Date(startDate);
+  const start = new Date(CHALLENGE_START_DATE);
   start.setHours(0, 0, 0, 0);
   const now = new Date();
   now.setHours(0, 0, 0, 0);
