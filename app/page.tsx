@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Youtube, Trophy, BookOpen, TrendingUp, Users, Play } from "lucide-react";
+import { Youtube, Trophy, BookOpen, TrendingUp } from "lucide-react";
 import MotivationalBanner from "@/components/common/MotivationalBanner";
 import RegistrationForm from "@/components/participant/RegistrationForm";
 import { CLIENT_ID_KEY } from "@/lib/constants";
@@ -14,144 +14,141 @@ export default function HomePage() {
   useEffect(() => {
     async function checkExistingUser() {
       const clientId = localStorage.getItem(CLIENT_ID_KEY);
-      if (!clientId) { setChecking(false); return; }
+      if (!clientId) {
+        setChecking(false);
+        return;
+      }
+
       try {
         const res = await fetch("/api/participants/lookup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ client_id: clientId }),
         });
+
         const data = await res.json();
-        if (data?.id) { router.push("/my"); return; }
+        if (data?.id) {
+          router.push("/my");
+          return;
+        }
       } catch {}
+
       setChecking(false);
     }
+
     checkExistingUser();
   }, [router]);
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-red-600 border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
+          <p className="text-sm text-gray-500">불러오는 중...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <MotivationalBanner />
 
-      {/* 네비게이션 */}
-      <header className="sticky top-0 z-20 border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600">
-              <span className="text-sm font-black text-white">F</span>
+      {/* Nav links */}
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2 font-bold text-gray-900">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+              <Youtube size={16} className="text-white" />
             </div>
-            <span className="text-lg font-black text-gray-900">프리덤클래스</span>
+            4주 챌린지
           </div>
-          <nav className="hidden items-center gap-1 sm:flex">
-            <a href="/" className="rounded-lg bg-red-50 px-4 py-2 text-sm font-semibold text-red-600">HOME</a>
-            <a href="/resources" className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">무료 특강</a>
-            <a href="/leaderboard" className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">유뿌챌</a>
-          </nav>
-          <a
-            href="/login"
-            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
-          >
-            로그인 / 내 강의
-          </a>
-        </div>
-      </header>
-
-      {/* 히어로 배너 */}
-      <div className="bg-red-600 text-white">
-        <div className="mx-auto max-w-5xl px-6 py-12">
-          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">
-            <TrendingUp size={12} />
-            4주 업로드 챌린지 1기 모집 중
-          </div>
-          <h1 className="text-3xl font-black leading-tight sm:text-4xl">
-            유튜브 뿌시기 챌린지,<br />
-            <span className="text-yellow-300">지금 바로 시작하세요.</span>
-          </h1>
-          <p className="mt-3 text-base text-red-100">
-            매주 꾸준히 업로드하면서 크리에이터 습관을 만들어보세요.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 rounded-xl bg-white/15 px-4 py-2 text-sm font-medium">
-              <Users size={14} /> 누적 참가자 <span className="font-bold text-yellow-300">100+명</span>
-            </div>
-            <div className="flex items-center gap-2 rounded-xl bg-white/15 px-4 py-2 text-sm font-medium">
-              <Play size={14} /> 업로드 영상 <span className="font-bold text-yellow-300">500+개</span>
-            </div>
+          <div className="flex gap-2">
+            <a
+              href="/leaderboard"
+              className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+            >
+              <Trophy size={14} /> 리더보드
+            </a>
+            <a
+              href="/resources"
+              className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-100"
+            >
+              <BookOpen size={14} /> 자료실
+            </a>
           </div>
         </div>
       </div>
 
-      {/* 메인 콘텐츠 */}
-      <div className="mx-auto max-w-5xl px-6 py-10">
-        <div className="grid gap-10 lg:grid-cols-2">
-          {/* 왼쪽: 소개 */}
-          <div>
-            <h2 className="text-2xl font-black text-gray-900">
-              챌린지 참가 혜택
-            </h2>
-            <p className="mt-2 text-sm text-gray-500">참가자에게만 제공되는 특별 혜택</p>
+      {/* Hero + Form */}
+      <div className="mx-auto max-w-4xl px-4 py-12">
+        <div className="grid items-start gap-12 lg:grid-cols-2">
+          {/* Hero */}
+          <div className="animate-fade-in">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700">
+              <TrendingUp size={14} />
+              4주 업로드 챌린지
+            </div>
+            <h1 className="mb-4 text-4xl font-black text-gray-900 leading-tight">
+              지금 이 순간부터{" "}
+              <span className="text-indigo-600">유튜버</span>가 되세요
+            </h1>
+            <p className="mb-8 text-lg text-gray-600 leading-relaxed">
+              매주 쇼츠 3개 또는 롱폼 1개를 업로드하면서
+              4주 동안 꾸준한 업로드 습관을 만들어 보세요.
+            </p>
 
-            <div className="mt-6 space-y-3">
+            {/* Features */}
+            <div className="space-y-3">
               {[
-                { icon: "📈", title: "진행률 추적", desc: "주차별 달성 현황을 한눈에 확인" },
-                { icon: "🏆", title: "익명 랭킹", desc: "다른 참가자 진행률로 동기부여" },
-                { icon: "📚", title: "무료 자료실", desc: "편집 노하우, AI 프롬프트 등 무료 제공" },
-              ].map(({ icon, title, desc }) => (
-                <div key={title} className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4">
-                  <span className="text-2xl">{icon}</span>
+                {
+                  emoji: "📈",
+                  title: "진행률 추적",
+                  desc: "주차별 달성 현황을 한눈에 확인",
+                },
+                {
+                  emoji: "🏆",
+                  title: "익명 랭킹",
+                  desc: "다른 참가자들의 진행률로 동기부여",
+                },
+                {
+                  emoji: "📚",
+                  title: "자료실",
+                  desc: "편집 노하우, AI 프롬프트 등 무료 자료 제공",
+                },
+              ].map(({ emoji, title, desc }) => (
+                <div key={title} className="flex items-start gap-3">
+                  <span className="text-2xl">{emoji}</span>
                   <div>
-                    <p className="font-bold text-gray-900">{title}</p>
+                    <p className="font-semibold text-gray-800">{title}</p>
                     <p className="text-sm text-gray-500">{desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* 달성 조건 */}
-            <div className="mt-4 rounded-xl border border-red-100 bg-red-50 p-4">
-              <p className="mb-2 text-sm font-bold text-red-800">📋 주차별 달성 조건</p>
-              <div className="space-y-1 text-sm text-red-700">
+            {/* Weekly goal */}
+            <div className="mt-8 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 p-4">
+              <p className="mb-2 text-sm font-semibold text-indigo-800">
+                📋 주차별 달성 조건
+              </p>
+              <div className="space-y-1 text-sm text-indigo-700">
                 <p>✅ 쇼츠 3개 이상 업로드</p>
-                <p className="pl-4 text-xs text-red-400">또는</p>
+                <p className="text-xs text-indigo-500 pl-4">또는</p>
                 <p>✅ 롱폼 영상 1개 이상 업로드</p>
               </div>
             </div>
-
-            {/* 바로가기 카드들 */}
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <a href="/leaderboard" className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-red-200 hover:bg-red-50 transition-colors">
-                <Trophy size={18} className="text-red-600" />
-                <div>
-                  <p className="text-sm font-bold text-gray-900">리더보드</p>
-                  <p className="text-xs text-gray-500">순위 확인</p>
-                </div>
-              </a>
-              <a href="/resources" className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white p-4 hover:border-red-200 hover:bg-red-50 transition-colors">
-                <BookOpen size={18} className="text-red-600" />
-                <div>
-                  <p className="text-sm font-bold text-gray-900">자료실</p>
-                  <p className="text-xs text-gray-500">무료 자료</p>
-                </div>
-              </a>
-            </div>
           </div>
 
-          {/* 오른쪽: 참가 신청 폼 */}
-          <div>
+          {/* Registration Form */}
+          <div className="animate-slide-up">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-1 inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600">
-                NEW · 1기
-              </div>
-              <h2 className="mt-2 text-xl font-black text-gray-900">챌린지 참가 신청</h2>
-              <p className="mb-5 mt-1 text-sm text-gray-500">로그인 없이 바로 시작할 수 있어요</p>
+              <h2 className="mb-1 text-xl font-bold text-gray-900">
+                챌린지 참가 신청
+              </h2>
+              <p className="mb-6 text-sm text-gray-500">
+                로그인 없이 바로 시작할 수 있어요
+              </p>
               <RegistrationForm />
             </div>
           </div>
