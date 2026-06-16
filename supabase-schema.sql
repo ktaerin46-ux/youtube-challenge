@@ -14,9 +14,13 @@ CREATE TABLE IF NOT EXISTS participants (
   challenge_start_date DATE NOT NULL,
   random_nickname TEXT NOT NULL,
   client_id TEXT NOT NULL UNIQUE,
+  phone_number TEXT UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- 기존 DB에 이미 participants 테이블이 있다면 아래 한 줄만 SQL Editor에서 실행하세요
+-- ALTER TABLE participants ADD COLUMN IF NOT EXISTS phone_number TEXT UNIQUE;
 
 -- 업로드 기록 테이블
 CREATE TABLE IF NOT EXISTS uploads (

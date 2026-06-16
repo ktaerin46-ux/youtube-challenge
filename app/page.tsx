@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { Youtube, Trophy, BookOpen, TrendingUp, Users, Play } from "lucide-react";
 import MotivationalBanner from "@/components/common/MotivationalBanner";
 import RegistrationForm from "@/components/participant/RegistrationForm";
+import FindByPhoneModal from "@/components/participant/FindByPhoneModal";
 import { CLIENT_ID_KEY } from "@/lib/constants";
 
 export default function HomePage() {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
+  const [findOpen, setFindOpen] = useState(false);
 
   useEffect(() => {
     async function checkExistingUser() {
@@ -153,10 +155,18 @@ export default function HomePage() {
               <h2 className="mt-2 text-xl font-black text-gray-900">챌린지 참가 신청</h2>
               <p className="mb-5 mt-1 text-sm text-gray-500">로그인 없이 바로 시작할 수 있어요</p>
               <RegistrationForm />
+              <button
+                onClick={() => setFindOpen(true)}
+                className="mt-3 w-full text-center text-xs font-medium text-gray-500 hover:text-red-600 transition-colors"
+              >
+                다른 기기에서 이미 등록하셨나요? 전화번호로 내 정보 찾기
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      <FindByPhoneModal isOpen={findOpen} onClose={() => setFindOpen(false)} />
     </div>
   );
 }
