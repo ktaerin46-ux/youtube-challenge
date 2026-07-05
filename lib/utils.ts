@@ -6,6 +6,7 @@ import {
 import {
   CHALLENGE_START_DATE,
   CHALLENGE_WEEKS,
+  CHALLENGE_TOTAL_DAYS,
   SHORTS_WEEKLY_GOAL,
   LONGFORM_WEEKLY_GOAL,
   RANDOM_NICKNAMES,
@@ -27,7 +28,8 @@ export function calculateProgress(
   let currentWeek = 0;
 
   const challengeEnd = new Date(start);
-  challengeEnd.setDate(start.getDate() + CHALLENGE_WEEKS * 7 - 1);
+  challengeEnd.setDate(start.getDate() + CHALLENGE_TOTAL_DAYS - 1);
+  challengeEnd.setHours(23, 59, 59, 999);
 
   const daysElapsed = Math.floor(
     (now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
@@ -47,6 +49,7 @@ export function calculateProgress(
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
     weekEnd.setHours(23, 59, 59, 999);
+    if (weekEnd > challengeEnd) weekEnd.setTime(challengeEnd.getTime());
 
     const weekUploads = uploads.filter((u) => {
       const uploadDate = new Date(u.upload_date);

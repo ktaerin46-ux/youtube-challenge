@@ -63,7 +63,10 @@ export const IS_LEGACY_COHORT = CURRENT_COHORT === "1기";
 export const CHALLENGE_START_DATE =
   process.env.NEXT_PUBLIC_CHALLENGE_START_DATE || "2026-06-04";
 export const CHALLENGE_WEEKS = 4;
-export const CHALLENGE_DAYS = 28;
+// 마지막 주가 온전한 7일이 아닐 수 있어서(예: 2기 26일), 전체 일수를 따로 오버라이드 가능
+export const CHALLENGE_TOTAL_DAYS = process.env.NEXT_PUBLIC_CHALLENGE_TOTAL_DAYS
+  ? Number(process.env.NEXT_PUBLIC_CHALLENGE_TOTAL_DAYS)
+  : CHALLENGE_WEEKS * 7;
 export const SHORTS_WEEKLY_GOAL = 3;
 export const LONGFORM_WEEKLY_GOAL = 1;
 

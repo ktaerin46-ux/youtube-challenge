@@ -82,10 +82,11 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "이미 등록된 참가자입니다." }, { status: 409 });
     }
 
-    // Get existing nicknames to avoid duplicates
+    // Get existing nicknames to avoid duplicates (기수별로 따로 체크)
     const { data: nicknames } = await supabase
       .from("participants")
-      .select("random_nickname");
+      .select("random_nickname")
+      .eq("cohort", CURRENT_COHORT);
 
     const existingNicknames = (nicknames || []).map(
       (n: { random_nickname: string }) => n.random_nickname
