@@ -30,11 +30,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem(ADMIN_TOKEN_KEY);
-    if (token) {
-      setAuthed(true);
+    async function checkToken() {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      if (!token) {
+        setChecking(false);
+        return;
+      }
+      // 저장된 토큰이 실제로 아직 유효한지 서버에 확인 (비밀번호가 바뀌면 예전 토큰은 무효화됨)
+      try {
+        const res = await fetch("/api/admin/stats", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          setAuthed(true);
+        } else {
+          localStorage.removeItem(ADMIN_TOKEN_KEY);
+        }
+      } catch {
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+      }
+      setChecking(false);
     }
-    setChecking(false);
+    checkToken();
   }, []);
 
   async function handleLogin(e: React.FormEvent) {
