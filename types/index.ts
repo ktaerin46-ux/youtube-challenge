@@ -2,6 +2,8 @@ export interface Participant {
   id: string;
   name: string;
   youtube_channel_link: string;
+  phone_number: string;
+  cohort: string;
   start_subscriber_count: number;
   challenge_start_date: string;
   random_nickname: string;

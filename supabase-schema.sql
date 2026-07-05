@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS participants (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   youtube_channel_link TEXT NOT NULL,
+  phone_number TEXT NOT NULL DEFAULT '',
+  cohort TEXT NOT NULL DEFAULT '1기',
   start_subscriber_count INTEGER NOT NULL DEFAULT 0,
   challenge_start_date DATE NOT NULL,
   random_nickname TEXT NOT NULL,
@@ -64,6 +66,8 @@ CREATE TABLE IF NOT EXISTS admin_notes (
 CREATE INDEX IF NOT EXISTS idx_uploads_participant_id ON uploads(participant_id);
 CREATE INDEX IF NOT EXISTS idx_uploads_upload_date ON uploads(upload_date);
 CREATE INDEX IF NOT EXISTS idx_participants_client_id ON participants(client_id);
+CREATE INDEX IF NOT EXISTS idx_participants_cohort ON participants(cohort);
+CREATE INDEX IF NOT EXISTS idx_participants_phone ON participants(phone_number);
 CREATE INDEX IF NOT EXISTS idx_admin_notes_participant_id ON admin_notes(participant_id);
 CREATE INDEX IF NOT EXISTS idx_messages_is_active ON motivational_messages(is_active);
 

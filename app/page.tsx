@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { Youtube, Trophy, BookOpen, TrendingUp } from "lucide-react";
 import MotivationalBanner from "@/components/common/MotivationalBanner";
 import RegistrationForm from "@/components/participant/RegistrationForm";
+import FindForm from "@/components/participant/FindForm";
 import { CLIENT_ID_KEY } from "@/lib/constants";
 
 export default function HomePage() {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
+  const [tab, setTab] = useState<"register" | "find">("register");
 
   useEffect(() => {
     async function checkExistingUser() {
@@ -140,16 +142,54 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Registration Form */}
+          {/* Registration / Find Form */}
           <div className="animate-slide-up">
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="mb-1 text-xl font-bold text-gray-900">
-                챌린지 참가 신청
-              </h2>
-              <p className="mb-6 text-sm text-gray-500">
-                로그인 없이 바로 시작할 수 있어요
-              </p>
-              <RegistrationForm />
+              {/* Tabs */}
+              <div className="mb-5 flex rounded-xl bg-gray-100 p-1">
+                <button
+                  onClick={() => setTab("register")}
+                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
+                    tab === "register"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  새로 참가하기
+                </button>
+                <button
+                  onClick={() => setTab("find")}
+                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-all ${
+                    tab === "find"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  이미 등록했어요
+                </button>
+              </div>
+
+              {tab === "register" ? (
+                <>
+                  <h2 className="mb-1 text-xl font-bold text-gray-900">
+                    챌린지 참가 신청
+                  </h2>
+                  <p className="mb-6 text-sm text-gray-500">
+                    로그인 없이 바로 시작할 수 있어요
+                  </p>
+                  <RegistrationForm />
+                </>
+              ) : (
+                <>
+                  <h2 className="mb-1 text-xl font-bold text-gray-900">
+                    내 기록 찾기
+                  </h2>
+                  <p className="mb-6 text-sm text-gray-500">
+                    다른 기기에서 접속할 때 사용하세요
+                  </p>
+                  <FindForm />
+                </>
+              )}
             </div>
           </div>
         </div>

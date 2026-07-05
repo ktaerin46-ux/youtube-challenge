@@ -26,6 +26,7 @@ export default function ParticipantsPage() {
   const [participants, setParticipants] = useState<AdminParticipantData[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [cohortFilter, setCohortFilter] = useState<string>("all");
   const [sortField, setSortField] = useState<SortField>("progress");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -64,13 +65,17 @@ export default function ParticipantsPage() {
     }
   }
 
+  const cohorts = Array.from(new Set(participants.map((p) => p.cohort))).sort();
+
   const filtered = participants
+    .filter((p) => cohortFilter === "all" || p.cohort === cohortFilter)
     .filter((p) => {
       if (!search) return true;
       return (
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.random_nickname.toLowerCase().includes(search.toLowerCase()) ||
-        p.youtube_channel_link.toLowerCase().includes(search.toLowerCase())
+        p.youtube_channel_link.toLowerCase().includes(search.toLowerCase()) ||
+        p.phone_number.includes(search)
       );
     })
     .sort((a, b) => {
@@ -141,7 +146,9 @@ export default function ParticipantsPage() {
 
   function handleExportCSV() {
     const rows = filtered.map((p) => ({
+      코호트: p.cohort,
       이름: p.name,
+      전화번호: p.phone_number,
       닉네임: p.random_nickname,
       채널링크: p.youtube_channel_link,
       시작구독자수: p.start_subscriber_count,
@@ -190,19 +197,33 @@ export default function ParticipantsPage() {
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="mb-4 relative">
-        <Search
-          size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-        />
-        <input
-          type="text"
-          placeholder="이름, 닉네임, 채널 링크로 검색..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
+      {/* Search & cohort filter */}
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <div className="relative flex-1">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            type="text"
+            placeholder="이름, 닉네임, 채널 링크, 전화번호로 검색..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-9 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+        <select
+          value={cohortFilter}
+          onChange={(e) => setCohortFilter(e.target.value)}
+          className="rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:w-40"
+        >
+          <option value="all">전체 기수</option>
+          {cohorts.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Table */}
@@ -238,7 +259,13 @@ export default function ParticipantsPage() {
                 <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[1fr_1fr_120px_120px_80px_80px] sm:items-center sm:gap-4">
                   {/* Name & Channel */}
                   <div>
-                    <p className="font-semibold text-gray-900">{p.name}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-semibold text-gray-900">{p.name}</p>
+                      <Badge variant="neutral" size="sm">{p.cohort}</Badge>
+                    </div>
+                    {p.phone_number && (
+                      <p className="text-xs text-gray-500 mt-0.5">{p.phone_number}</p>
+                    )}
                     <a
                       href={p.youtube_channel_link}
                       target="_blank"

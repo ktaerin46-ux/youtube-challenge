@@ -136,6 +136,15 @@ export function generateClientId(): string {
   return crypto.randomUUID();
 }
 
+export function isValidPhoneNumber(phone: string): boolean {
+  const digits = phone.replace(/[^0-9]/g, "");
+  return /^01[0-9]{8,9}$/.test(digits);
+}
+
+export function normalizePhoneNumber(phone: string): string {
+  return phone.replace(/[^0-9]/g, "");
+}
+
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return date.toLocaleDateString("ko-KR", {

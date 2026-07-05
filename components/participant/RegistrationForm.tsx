@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Youtube, User, Hash, Calendar } from "lucide-react";
+import { Youtube, User, Hash, Calendar, Phone } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { generateClientId } from "@/lib/utils";
-import { CLIENT_ID_KEY } from "@/lib/constants";
+import { generateClientId, isValidPhoneNumber } from "@/lib/utils";
+import { CLIENT_ID_KEY, IS_LEGACY_COHORT } from "@/lib/constants";
 
 export default function RegistrationForm() {
   const router = useRouter();
@@ -15,6 +15,7 @@ export default function RegistrationForm() {
   const [form, setForm] = useState({
     name: "",
     youtube_channel_link: "",
+    phone_number: "",
     start_subscriber_count: "",
     challenge_start_date: new Date().toISOString().split("T")[0],
   });
@@ -24,6 +25,12 @@ export default function RegistrationForm() {
     if (!form.name.trim()) newErrors.name = "이름을 입력해주세요.";
     if (!form.youtube_channel_link.trim())
       newErrors.youtube_channel_link = "유튜브 채널 링크를 입력해주세요.";
+    if (!IS_LEGACY_COHORT) {
+      if (!form.phone_number.trim())
+        newErrors.phone_number = "전화번호를 입력해주세요.";
+      else if (!isValidPhoneNumber(form.phone_number))
+        newErrors.phone_number = "올바른 휴대폰 번호 형식이 아니에요. (예: 010-1234-5678)";
+    }
     if (!form.challenge_start_date)
       newErrors.challenge_start_date = "시작일을 선택해주세요.";
     return newErrors;
@@ -105,6 +112,26 @@ export default function RegistrationForm() {
           type="url"
         />
       </div>
+
+      {!IS_LEGACY_COHORT && (
+        <div className="relative">
+          <div className="pointer-events-none absolute left-3 top-9 text-gray-400">
+            <Phone size={16} />
+          </div>
+          <Input
+            label="전화번호"
+            placeholder="010-1234-5678"
+            value={form.phone_number}
+            onChange={(e) =>
+              setForm({ ...form, phone_number: e.target.value })
+            }
+            error={errors.phone_number}
+            className="pl-9"
+            type="tel"
+            hint="다른 기기에서 접속할 때 이름과 함께 사용돼요"
+          />
+        </div>
+      )}
 
       <div className="relative">
         <div className="pointer-events-none absolute left-3 top-9 text-gray-400">

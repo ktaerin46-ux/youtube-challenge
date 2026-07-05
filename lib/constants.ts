@@ -56,7 +56,12 @@ export const DEFAULT_MOTIVATIONAL_MESSAGES = [
   "포기하지 않는 사람이 결국 이깁니다.",
 ];
 
-export const CHALLENGE_START_DATE = "2026-06-04";
+// 배포마다(1기/2기) 다른 값을 쓸 수 있도록 환경변수로 오버라이드 가능
+export const CURRENT_COHORT = process.env.NEXT_PUBLIC_COHORT || "1기";
+// "1기"는 기존 방식(이름+유튜브 링크 인증) 유지, 그 외 코호트는 이름+전화번호 인증 사용
+export const IS_LEGACY_COHORT = CURRENT_COHORT === "1기";
+export const CHALLENGE_START_DATE =
+  process.env.NEXT_PUBLIC_CHALLENGE_START_DATE || "2026-06-04";
 export const CHALLENGE_WEEKS = 4;
 export const CHALLENGE_DAYS = 28;
 export const SHORTS_WEEKLY_GOAL = 3;

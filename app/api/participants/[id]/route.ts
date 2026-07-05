@@ -128,6 +128,7 @@ export async function PUT(
     const allowedFields = [
       "name",
       "youtube_channel_link",
+      "phone_number",
       "start_subscriber_count",
       "challenge_start_date",
     ];

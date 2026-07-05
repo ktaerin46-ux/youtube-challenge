@@ -1,16 +1,18 @@
 import { createAdminClient } from "@/lib/supabase";
-import { calculateProgress, getRandomNickname } from "@/lib/utils";
+import { calculateProgress, getRandomNickname, isValidPhoneNumber, normalizePhoneNumber } from "@/lib/utils";
 import { NextRequest } from "next/server";
 import { Upload } from "@/types";
+import { CURRENT_COHORT, IS_LEGACY_COHORT } from "@/lib/constants";
 
-// GET: public anonymized leaderboard data
+// GET: public anonymized leaderboard data (only this deployment's cohort)
 export async function GET() {
   try {
     const supabase = createAdminClient();
 
     const { data: participants, error: pError } = await supabase
       .from("participants")
-      .select("id, random_nickname, start_subscriber_count, challenge_start_date, created_at");
+      .select("id, random_nickname, start_subscriber_count, challenge_start_date, created_at")
+      .eq("cohort", CURRENT_COHORT);
 
     if (pError) throw pError;
 
@@ -57,10 +59,14 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, youtube_channel_link, start_subscriber_count, challenge_start_date, client_id } = body;
+    const { name, youtube_channel_link, phone_number, start_subscriber_count, challenge_start_date, client_id } = body;
 
     if (!name?.trim() || !youtube_channel_link?.trim() || !challenge_start_date || !client_id) {
       return Response.json({ error: "필수 항목을 모두 입력해주세요." }, { status: 400 });
+    }
+
+    if (!IS_LEGACY_COHORT && !isValidPhoneNumber(phone_number || "")) {
+      return Response.json({ error: "올바른 전화번호를 입력해주세요." }, { status: 400 });
     }
 
     const supabase = createAdminClient();
@@ -91,6 +97,8 @@ export async function POST(request: NextRequest) {
       .insert({
         name: name.trim(),
         youtube_channel_link: youtube_channel_link.trim(),
+        phone_number: normalizePhoneNumber(phone_number || ""),
+        cohort: CURRENT_COHORT,
         start_subscriber_count: Number(start_subscriber_count) || 0,
         challenge_start_date,
         client_id,
