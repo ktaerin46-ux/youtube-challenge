@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Settings, Youtube, CheckCircle } from "lucide-react";
+import { Settings, Youtube, CheckCircle, LogOut } from "lucide-react";
 import Navbar from "@/components/common/Navbar";
 import MotivationalBanner from "@/components/common/MotivationalBanner";
 import StatCards from "@/components/participant/StatCards";
@@ -73,6 +73,11 @@ export default function MyPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  function handleLogout() {
+    localStorage.removeItem(CLIENT_ID_KEY);
+    router.push("/");
+  }
 
   async function handleSaveEdit() {
     if (!data) return;
@@ -160,13 +165,18 @@ export default function MyPage() {
               <span className="text-sm font-bold text-indigo-700">🎭 {data.random_nickname}</span>
             </div>
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setEditOpen(true)}
-          >
-            <Settings size={14} /> 설정
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setEditOpen(true)}
+            >
+              <Settings size={14} /> 설정
+            </Button>
+            <Button variant="secondary" size="sm" onClick={handleLogout}>
+              <LogOut size={14} /> 로그아웃
+            </Button>
+          </div>
         </div>
 
         {/* Overall Progress */}
