@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import * as XLSX from "xlsx";
 import {
   Search,
   Download,
+  FileSpreadsheet,
   Trash2,
   ChevronDown,
   ChevronUp,
@@ -161,6 +163,40 @@ export default function ParticipantsPage() {
     downloadCSV(rows, "participants.csv");
   }
 
+  function handleExportFeedbackExcel() {
+    const rows = filtered.flatMap((p) =>
+      p.notes.length === 0
+        ? [
+            {
+              코호트: p.cohort,
+              이름: p.name,
+              닉네임: p.random_nickname,
+              피드백내용: "",
+              작성일: "",
+            },
+          ]
+        : p.notes.map((n) => ({
+            코호트: p.cohort,
+            이름: p.name,
+            닉네임: p.random_nickname,
+            피드백내용: n.note,
+            작성일: formatDate(n.created_at),
+          }))
+    );
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    worksheet["!cols"] = [
+      { wch: 10 },
+      { wch: 12 },
+      { wch: 14 },
+      { wch: 60 },
+      { wch: 18 },
+    ];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "피드백");
+    XLSX.writeFile(workbook, "참가자_피드백.xlsx");
+  }
+
   const SortButton = ({
     field,
     label,
@@ -192,9 +228,14 @@ export default function ParticipantsPage() {
             총 {participants.length}명 참가 중
           </p>
         </div>
-        <Button variant="secondary" size="sm" onClick={handleExportCSV}>
-          <Download size={14} /> CSV 다운로드
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" size="sm" onClick={handleExportCSV}>
+            <Download size={14} /> CSV 다운로드
+          </Button>
+          <Button variant="secondary" size="sm" onClick={handleExportFeedbackExcel}>
+            <FileSpreadsheet size={14} /> 피드백 엑셀 다운로드
+          </Button>
+        </div>
       </div>
 
       {/* Search & cohort filter */}
